@@ -13,9 +13,17 @@ interface TodoState {
 }
 
 const initialState: TodoState = {
-  lists: [],
-  activeListId: null,
+  lists: [
+    {
+      id: '1',
+      name: 'Default List',
+      items: [],
+      inputValue: '',
+    },
+  ],
+  activeListId: '1',
 };
+
 
 const todoSlice = createSlice({
   name: 'todo',

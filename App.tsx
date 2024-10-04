@@ -4,12 +4,16 @@ import {SafeAreaView, StyleSheet} from 'react-native';
 import {store} from './Redux/store/store';
 import {Provider} from 'react-redux';
 
+import {NavigationContainer} from '@react-navigation/native';
+
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <SafeAreaView style={styles.contaienr}>
-        <Segmesnts />
-      </SafeAreaView>
+      <NavigationContainer>
+        <SafeAreaView style={styles.contaienr}>
+          <Segmesnts />
+        </SafeAreaView>
+      </NavigationContainer>
     </Provider>
   );
 };

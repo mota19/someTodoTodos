@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
-  ScrollView,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {AppDispatch, RootState} from '../Redux/store/store';
@@ -18,6 +17,9 @@ import {
   addList,
 } from '../Redux/slices/todoSlice';
 import SegmentFlatListItem from './segmentFlatListItem';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+
+const Tab = createMaterialTopTabNavigator();
 
 const Segments: React.FC = () => {
   const {activeListId, lists} = useSelector((state: RootState) => state.todo);
@@ -58,13 +60,20 @@ const Segments: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TextInput
-          style={styles.input}
-          value={isAddingList ? newListName : inputValue}
-          placeholder={isAddingList ? 'Enter new list name' : 'Enter an item'}
-          onChangeText={handleInputChange}
-          onSubmitEditing={handleSubmit}
-        />
+        <View style={styles.inputAndAddList}>
+          <TextInput
+            style={styles.input}
+            value={isAddingList ? newListName : inputValue}
+            placeholder={isAddingList ? 'Enter new list name' : 'Enter an item'}
+            onChangeText={handleInputChange}
+            onSubmitEditing={handleSubmit}
+          />
+          <TouchableOpacity
+            onPress={() => setIsAddingList(!isAddingList)}
+            style={styles.addListButton}>
+            <Text style={styles.addListButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity
           onPress={handleSubmit}
           style={
@@ -77,34 +86,48 @@ const Segments: React.FC = () => {
           </Text>
         </TouchableOpacity>
       </View>
-
-      <ScrollView
-        style={styles.listSelector}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarScrollEnabled: true,
+          tabBarItemStyle: {width: 'auto'},
+          tabBarIndicatorStyle: {backgroundColor: '#007BFF'},
+          tabBarLabelStyle: {
+            fontSize: 14,
+            fontWeight: 'bold',
+            textAlign: 'center',
+          },
+          tabBarStyle: {backgroundColor: '#f0f0f0'},
+        }}>
         {lists.map(list => (
-          <TouchableOpacity
+          <Tab.Screen
             key={list.id}
-            onPress={() => dispatch(setActiveList(list.id))}
-            style={[
-              styles.listButton,
-              activeListId === list.id && styles.activeListButton,
-            ]}>
-            <Text style={styles.listButtonText}>{list.name}</Text>
-          </TouchableOpacity>
+            name={list.name}
+            options={{tabBarLabel: list.name}}
+            listeners={{
+              tabPress: () => {
+                dispatch(setActiveList(list.id));
+              },
+              focus: () => {
+                console.log(`Swiped to list: ${list.name}`);
+                dispatch(setActiveList(list.id));
+              },
+            }}>
+            {() => (
+              <FlatList
+                style={styles.FlatListContainer}
+                data={list.items}
+                renderItem={({item}) => <SegmentFlatListItem item={item} />}
+                keyExtractor={(item, index) => index.toString()}
+                ListEmptyComponent={() => (
+                  <View>
+                    <Text>No items available</Text>
+                  </View>
+                )}
+              />
+            )}
+          </Tab.Screen>
         ))}
-        <TouchableOpacity
-          onPress={() => setIsAddingList(!isAddingList)}
-          style={styles.addListButton}>
-          <Text style={styles.addListButtonText}>+</Text>
-        </TouchableOpacity>
-      </ScrollView>
-      <FlatList
-        style={styles.FlatListContainer}
-        data={items}
-        renderItem={({item}) => <SegmentFlatListItem item={item} />}
-        keyExtractor={(item, index) => index.toString()}
-      />
+      </Tab.Navigator>
     </View>
   );
 };
@@ -118,6 +141,11 @@ const styles = StyleSheet.create({
   header: {
     marginHorizontal: 10,
   },
+  inputAndAddList: {
+    flexDirection: 'row',
+    height: 40,
+    marginBottom: 10,
+  },
   input: {
     height: 40,
     borderRadius: 10,
@@ -126,6 +154,7 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     padding: 10,
     marginBottom: 10,
+    width: '90%',
   },
   submit: {
     backgroundColor: '#007BFF',
@@ -139,13 +168,7 @@ const styles = StyleSheet.create({
   },
   FlatListContainer: {
     flex: 1,
-    marginTop: 20,
     backgroundColor: 'gray',
-  },
-  listSelector: {
-    maxHeight: 40,
-    marginVertical: 10,
-    marginHorizontal: 10,
   },
   listButton: {
     padding: 10,
@@ -159,19 +182,9 @@ const styles = StyleSheet.create({
   listButtonText: {
     color: '#000',
   },
-  newListInput: {
-    height: 40,
-    borderRadius: 10,
-    borderColor: 'black',
-    borderWidth: 2,
-    borderStyle: 'solid',
-    padding: 10,
-    marginBottom: 10,
-    marginHorizontal: 10,
-  },
   addListButton: {
     backgroundColor: '#28a745',
-    borderRadius: 10,
+    borderRadius: 9999,
     padding: 10,
     alignItems: 'center',
     marginHorizontal: 10,

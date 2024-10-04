@@ -8,7 +8,11 @@ interface SegmentFlatListItemProps {
 const SegmentFlatListItem: React.FC<SegmentFlatListItemProps> = ({item}) => {
   return (
     <View style={styles.container}>
+      {/* <View style={styles.Image}></View>
+      <View>
+        <Text style={styles.Name}>Name</Text> */}
       <Text>{item}</Text>
+      {/* </View> */}
     </View>
   );
 };
@@ -21,18 +25,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     borderBottomWidth: 1,
     borderBottomColor: 'black',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     paddingHorizontal: 20,
+    flexDirection: 'row',
   },
-  leftAction: {
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    backgroundColor: 'blue',
-    width: 100,
-    paddingHorizontal: 10,
-  },
-  actionText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
+  // Image: {
+  //   backgroundColor: 'rgb(25,25,25)',
+  //   borderColor: 'black',
+  //   borderStyle: 'solid',
+  //   borderWidth: 2,
+  //   height: 40,
+  //   width: 40,
+  //   borderRadius: 9999,
+  //   marginRight: 10,
+  // },
+  // Name: {
+  //   color: 'white',
+  //   fontWeight: 'bold',
+  // },
 });
